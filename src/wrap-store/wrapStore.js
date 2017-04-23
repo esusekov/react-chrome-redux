@@ -7,10 +7,10 @@ import * as browser from '../browser'
 /**
  * Responder for promisified results
  * @param  {object} dispatchResult The result from `store.dispatch()`
- * @return {undefined}
+ * @return {Promise}
  */
 const promiseResponder = (dispatchResult) => {
-  Promise
+  return Promise
     .resolve(dispatchResult)
     .then((res) => {
       return {
