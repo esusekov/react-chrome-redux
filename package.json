@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/tshaddix/react-chrome-redux#readme",
   "dependencies": {
-    "lodash": "^4.5.1"
+    "lodash": "^4.5.1",
+    "webextension-polyfill": "^0.1.1"
   },
   "devDependencies": {
     "babel": "^6.3.26",
@@ -34,8 +35,5 @@
     "mocha": "^2.3.4",
     "should": "^8.2.0",
     "sinon": "^1.17.2"
-  },
-  "peerDependencies": {
-    "webextension-polyfill": "^0.1.1"
   }
 }
