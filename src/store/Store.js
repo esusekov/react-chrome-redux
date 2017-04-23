@@ -1,4 +1,5 @@
 import assignIn from 'lodash/assignIn';
+import * as browser from '../browser'
 
 import {
   DISPATCH_TYPE,
@@ -23,7 +24,7 @@ class Store {
     this.readyPromise = new Promise(resolve => this.readyResolve = resolve);
 
     this.extensionId = extensionId; // keep the extensionId as an instance variable
-    this.port = chrome.runtime.connect(this.extensionId, {name: portName});
+    this.port = browser.connect(this.extensionId, {name: portName});
     this.listeners = [];
     this.state = state;
 
@@ -91,24 +92,20 @@ class Store {
    * @return {Promise}     Promise that will resolve/reject based on the action response from the background
    */
   dispatch(data) {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(
-        this.extensionId,
-        {
-          type: DISPATCH_TYPE,
-          portName: this.portName,
-          payload: data
-        }, (resp) => {
-          const {error, value} = resp;
+    return browser.sendMessage(this.extensionId, {
+      type: DISPATCH_TYPE,
+      portName: this.portName,
+      payload: data
+    }).then((resp) => {
+      const {error, value} = resp;
 
-          if (error) {
-            const bgErr = new Error(`${backgroundErrPrefix}${error}`);
+      if (error) {
+        const bgErr = new Error(`${backgroundErrPrefix}${error}`);
 
-            reject(assignIn(bgErr, error));
-          } else {
-            resolve(value && value.payload);
-          }
-        });
+        throw assignIn(bgErr, error);
+      }
+
+      return value && value.payload;
     });
   }
 }

@@ -2,28 +2,28 @@ import {
   DISPATCH_TYPE,
   STATE_TYPE
 } from '../constants';
+import * as browser from '../browser'
 
 /**
  * Responder for promisified results
  * @param  {object} dispatchResult The result from `store.dispatch()`
- * @param  {function} send         The function used to respond to original message
  * @return {undefined}
  */
-const promiseResponder = (dispatchResult, send) => {
+const promiseResponder = (dispatchResult) => {
   Promise
     .resolve(dispatchResult)
     .then((res) => {
-      send({
+      return {
         error: null,
         value: res
-      });
+      };
     })
     .catch((err) => {
       console.error('error dispatching result:', err);
-      send({
+      return {
         error: err.message,
         value: null
-      });
+      };
     });
 };
 
@@ -58,8 +58,7 @@ export default (store, {
         console.error(e);
       }
 
-      dispatchResponder(dispatchResult, sendResponse);
-      return true;
+      return dispatchResponder(dispatchResult);
     }
   };
 
@@ -95,28 +94,20 @@ export default (store, {
   /**
    * Setup action handler
    */
-  chrome.runtime.onMessage.addListener(dispatchResponse);
+  browser.setMessageListener(dispatchResponse);
 
   /**
    * Setup external action handler
    */
-  if (chrome.runtime.onMessageExternal) {
-    chrome.runtime.onMessageExternal.addListener(dispatchResponse);
-  } else {
-    console.warn('runtime.onMessageExternal is not supported');
-  }
+  browser.setExternalMessageListener(dispatchResponse);
 
   /**
    * Setup extended connection
    */
-  chrome.runtime.onConnect.addListener(connectState);
+  browser.setConnectListener(connectState);
 
   /**
    * Setup extended external connection
    */
-  if (chrome.runtime.onConnectExternal) {
-    chrome.runtime.onConnectExternal.addListener(connectState);
-  } else {
-    console.warn('runtime.onConnectExternal is not supported');
-  }
+  browser.setExternalConnectListener(connectState);
 };

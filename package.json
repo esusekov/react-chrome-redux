@@ -34,5 +34,8 @@
     "mocha": "^2.3.4",
     "should": "^8.2.0",
     "sinon": "^1.17.2"
+  },
+  "peerDependencies": {
+    "webextension-polyfill": "^0.1.1"
   }
 }
