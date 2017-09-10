@@ -97,6 +97,10 @@ class Store {
       portName: this.portName,
       payload: data
     }).then((resp) => {
+      if (!resp) {
+        return;
+      }
+
       const {error, value} = resp;
 
       if (error) {
